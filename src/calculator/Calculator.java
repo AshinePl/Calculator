@@ -31,23 +31,23 @@ public class Calculator implements ActionListener {
         gapX = (frameX - 5 * buttonX) / 6;
         gapY = (frameY - 45 - 4 * buttonY) / 5;
 
-        s = new String("789()456*/123+-C0.=^");
+        s = new String("789()456*/123+-C0.^=");
 
         window = new JFrame("Calculator");
         window.setSize(frameX, frameY);
         window.setResizable(false);
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         window.setLayout(new BoxLayout(window.getContentPane(), BoxLayout.Y_AXIS));
-        
+
         Font f = new Font("Arial", Font.LAYOUT_LEFT_TO_RIGHT, 30);
-        
+
         window.add(Box.createVerticalStrut(5));
-        
+
         textStack = new JTextField();
         textStack.setFont(f);
         textStack.setMaximumSize(new Dimension(frameX - 10, 35));
         window.add(textStack);
-        
+
         window.add(Box.createVerticalStrut(5));
 
         textField = new JTextField("");
@@ -66,7 +66,7 @@ public class Calculator implements ActionListener {
             button[i].setFont(f);
             panel.add(button[i]);
         }
-        panel.setMaximumSize(new Dimension(frameX-10,frameY-122));
+        panel.setMaximumSize(new Dimension(frameX - 10, frameY - 122));
         window.add(panel);
 
         values = new Stack<>();
@@ -81,74 +81,72 @@ public class Calculator implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        try{
-        String choice = ((JButton) e.getSource()).getText();
-        switch (choice) {
-            case "1":
-            case "2":
-            case "3":
-            case "4":
-            case "5":
-            case "6":
-            case "7":
-            case "8":
-            case "9":
-            case "0":
-            case ".":
-                textField.setText(textField.getText() + choice);
-                textStack.setText(textStack.getText() + choice);
-                break;
-            case "+":
-            case "-":
-            case "*":
-            case "/":
-            case "^":
-                textStack.setText(textStack.getText() + " " + choice + " ");
-                Push(choice);
-                textField.setText("");
-                break;
-            case "(":
-            case ")":
-                textStack.setText(textStack.getText() + " " + choice + " ");
-                Push(choice);
-                textField.setText("");
-                break;
-            case "=":
-                if(!textField.getText().equals(""))
-                    values.push(Double.valueOf(textField.getText()));
-                ShowAnswer();
-                break;
-            default:
-                Clear();
-        }
-        }
-        catch(Exception ex)
-        {
+        try {
+            String choice = ((JButton) e.getSource()).getText();
+            switch (choice) {
+                case "1":
+                case "2":
+                case "3":
+                case "4":
+                case "5":
+                case "6":
+                case "7":
+                case "8":
+                case "9":
+                case "0":
+                case ".":
+                    textField.setText(textField.getText() + choice);
+                    textStack.setText(textStack.getText() + choice);
+                    break;
+                case "+":
+                case "-":
+                case "*":
+                case "/":
+                case "^":
+//                textStack.setText(textStack.getText() + " " + choice + " ");
+//                Push(choice);
+//                textField.setText("");
+//                break;
+                case "(":
+                case ")":
+                    textStack.setText(textStack.getText() + " " + choice + " ");
+                    Push(choice);
+                    textField.setText("");
+                    break;
+                case "=":
+                    if (!textField.getText().equals("")) {
+                        values.push(Double.valueOf(textField.getText()));
+                    }
+                    ShowAnswer();
+                    break;
+                default:
+                    Clear();
+            }
+        } catch (Exception ex) {
             Clear();
             textField.setText("Błędne wyrażenie!");
         }
     }
 
     private void Push(String choice) {
-        if(choice.equals("("))
-        {
-            if(!textField.getText().equals(""))
-            {
+        if (choice.equals("(")) {
+            if (!textField.getText().equals("")) {
                 values.push(Double.valueOf(textField.getText()));
                 operators.push("*");
             }
             operators.push(choice);
-        }
-        else if (!choice.equals(")")) {
+        } else if (!choice.equals(")")) {
             while (!operators.isEmpty() && Priority(choice) < Priority(operators.peek())) {
                 Calculate();
             }
             operators.push(choice);
-            if(!textField.getText().equals(""))
+            if (!textField.getText().equals("")) {
                 values.push(Double.valueOf(textField.getText()));
+            }
         } else {
-            if(!textField.getText().equals(""))
+            if (!textField.getText().equals("")) {
                 values.push(Double.valueOf(textField.getText()));
+            }
             while (!operators.isEmpty() && !operators.peek().equals("(")) {
                 Calculate();
             }
@@ -161,7 +159,6 @@ public class Calculator implements ActionListener {
         values.clear();
         textField.setText("");
         textStack.setText("");
-        
     }
 
     private int Priority(String choice) {
@@ -207,14 +204,11 @@ public class Calculator implements ActionListener {
         }
 
         String ans = values.peek().toString();
+
         int pos = ans.indexOf(".");
-        if (pos != -1 && ans.length() > 10) {
-            textField.setText(ans.substring(0, ans.length() - 2));
-            //textStack.setText(ans.substring(0, ans.length() - 2));
-        } else {
-            textField.setText(ans);
-           // textStack.setText(ans);
-        }
+        textField.setText(ans.substring(0, pos + 10));
+        //textStack.setText(ans.substring(0, ans.length() - 2));
+
         textStack.setText("( " + textStack.getText() + " )");
     }
 
